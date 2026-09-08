@@ -19,11 +19,28 @@
 | **[Retail Audit Agent](https://github.com/GOOD-123-CPU/retail-audit-agent)** | 零售资料分析、规则风险识别与审计工作流演示 | 文档解析、规则评分、LLM 解释、Next.js、SQL 存储 |
 | **[AlphaDebate / FinSightPro](https://github.com/GOOD-123-CPU/AlphaDebate-FinResearch)** | 结构化行情数据与多角色金融研究报告生成 | Python、AkShare、多智能体辩论、流式输出 |
 
+## 按兴趣浏览
+
+- **机器学习与 NLP**：从 HanBayes 的模型对比、稀疏特征和预测解释开始。
+- **统计研究与因果推断**：从 VoxFrontier 的方法假设、合成数据和复现流程开始。
+- **数据应用与工程**：从 MediRAG 的检索链路、ScreenWeaver 的数据展示和业务分析项目开始。
+
 ## 从实验结果开始
 
 ### HanBayes · 可解释中文情感分类
 
 比较四种贝叶斯模型，提供数据清洗、冻结配置、预测解释和结果复现入口。
+
+仓库保存的 ChnSentiCorp 最终测试结果如下。数值来自已提交结果文件，不是实时运行状态，也不代表其他数据集上的效果。
+
+| 模型 | Accuracy | Macro-F1 | AUC |
+| :--- | ---: | ---: | ---: |
+| StandardNB 基线 | 0.7793 | 0.7786 | 0.8505 |
+| SDFWNB | 0.8073 | 0.8065 | 0.8867 |
+
+[冻结配置](https://github.com/GOOD-123-CPU/hanbayes/blob/main/configs/frozen.json) · [完整结果 CSV](https://github.com/GOOD-123-CPU/hanbayes/blob/main/results/final_test_metrics.csv)
+
+清洗后测试集为 1,178 条；最终训练使用清洗后的 train + dev。Accuracy 提升约 2.80 个百分点，Macro-F1 提升约 0.0279。复现入口见项目 README。
 
 [![HanBayes 模型对比图](https://raw.githubusercontent.com/GOOD-123-CPU/hanbayes/main/docs/assets/benchmark.png)](https://github.com/GOOD-123-CPU/hanbayes)
 
