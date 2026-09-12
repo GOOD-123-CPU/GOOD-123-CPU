@@ -8,21 +8,14 @@ I build data projects that connect **statistical modeling, reproducible evaluati
 
 [Machine Learning](https://github.com/GOOD-123-CPU/hanbayes) · [Statistical Analysis](https://github.com/GOOD-123-CPU/voxFrontier) · [RAG / Retrieval](https://github.com/GOOD-123-CPU/medirag-open) · [Data Visualization](https://github.com/GOOD-123-CPU/screenweaver) · [All Repositories](https://github.com/GOOD-123-CPU?tab=repositories)
 
-## 当前关注方向
-
-- **Interpretable Machine Learning**：可解释分类、稀疏特征、模型对比与误差分析。
-- **Statistical Modeling and Causal Analysis**：效率测度、归因、Double Machine Learning、反事实模拟。
-- **Retrieval-Augmented Applications**：多阶段检索、重排序、来源引用、评估边界说明。
-- **Data Products and Visualization**：把数据处理、分析结果和交互界面组织成可运行应用。
-
 ## 代表项目
 
 | 项目 | 研究问题 / 应用场景 | 方法与实现 | 推荐入口 |
 | :--- | :--- | :--- | :--- |
-| **[HanBayes](https://github.com/GOOD-123-CPU/hanbayes)** | 中文情感分类：比较模型改进，并解释预测依据 | 朴素贝叶斯、字符 n-gram、稀疏矩阵、特征加权、可复现实验 | [结果](https://github.com/GOOD-123-CPU/hanbayes#results) · [算法](https://github.com/GOOD-123-CPU/hanbayes/blob/main/docs/algorithm.md) |
+| **[HanBayes](https://github.com/GOOD-123-CPU/hanbayes)** | 中文情感分类：比较模型改进，并解释预测依据 | 朴素贝叶斯、字符 n-gram、稀疏矩阵、特征加权、可复现实验 | [结果 CSV](https://github.com/GOOD-123-CPU/hanbayes/blob/main/results/final_test_metrics.csv) · [算法](https://github.com/GOOD-123-CPU/hanbayes/blob/main/docs/algorithm.md) |
 | **[VoxFrontier](https://github.com/GOOD-123-CPU/voxFrontier)** | 使用合成数据探索声音特征与直播效率的关系 | DEA、贡献归因、Double Machine Learning、反事实模拟 | [方法](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/methodology.md) · [复现](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/user_guide.md) |
 | **[MediRAG](https://github.com/GOOD-123-CPU/medirag-open)** | 医疗知识文档的检索与来源可追溯问答 | 多路召回、RRF、重排序、Milvus、Spring Boot、Vue | [中文 README](https://github.com/GOOD-123-CPU/medirag-open) |
-| **[ScreenWeaver](https://github.com/GOOD-123-CPU/screenweaver)** | 用配置组织数据、图表与大屏布局 | TypeScript、Vue、ECharts、HTTP / WebSocket 数据接入 | [项目主页](https://github.com/GOOD-123-CPU/screenweaver) |
+| **[ScreenWeaver](https://github.com/GOOD-123-CPU/screenweaver)** | 用配置组织数据、图表与大屏布局 | TypeScript、Vue、ECharts、HTTP / WebSocket 数据接入 | [示例配置](https://github.com/GOOD-123-CPU/screenweaver/blob/main/public/configs/city-ops.json) · [数据接入](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/data-integration.md) |
 | **[Retail Audit Agent](https://github.com/GOOD-123-CPU/retail-audit-agent)** | 零售资料分析、规则风险识别与审计工作流演示 | 文档解析、规则评分、LLM 解释、Next.js、SQL 存储 | [项目主页](https://github.com/GOOD-123-CPU/retail-audit-agent) |
 | **[AlphaDebate / FinSightPro](https://github.com/GOOD-123-CPU/AlphaDebate-FinResearch)** | 结构化行情数据与多角色金融研究报告生成 | Python、AkShare、多智能体辩论、流式输出 | [项目主页](https://github.com/GOOD-123-CPU/AlphaDebate-FinResearch) |
 
@@ -45,7 +38,7 @@ HanBayes 比较多种贝叶斯文本分类模型，并保留数据清洗、冻�
 
 ### VoxFrontier · 效率分析与因果估计实验
 
-VoxFrontier 从合成数据出发，串联效率测度、贡献归因、因果估计与情景模拟。这个项目适合展示统计建模思路、研究假设表达和复现流程；示例结果用于方法演示，不代表真实平台的实证结论。
+VoxFrontier 从合成数据出发，串联效率测度、贡献归因、因果估计与情景模拟。项目保留方法说明、使用指南与结果文件；示例结果用于方法演示，不代表真实平台的实证结论。
 
 [![VoxFrontier 合成数据分析总览](https://raw.githubusercontent.com/GOOD-123-CPU/voxFrontier/main/figures/dashboard.png)](https://github.com/GOOD-123-CPU/voxFrontier)
 
@@ -60,13 +53,6 @@ VoxFrontier 从合成数据出发，串联效率测度、贡献归因、因果�
 | 检索与 AI 应用 | MediRAG、LexAtlas、Retail Audit Agent | RAG、向量检索、RRF、重排序、LLM 应用编排 |
 | 数据可视化与前端应用 | ScreenWeaver、VoxFrontier | Vue、TypeScript、ECharts、交互式仪表盘 |
 | 工程化与复现 | HanBayes、MediRAG、AlphaDebate | Docker、GitHub Actions、配置文件、README、结果文件 |
-
-## 按兴趣浏览
-
-- 想看 **机器学习与中文 NLP**：从 [HanBayes](https://github.com/GOOD-123-CPU/hanbayes) 开始。
-- 想看 **统计研究与因果推断**：从 [VoxFrontier](https://github.com/GOOD-123-CPU/voxFrontier) 开始。
-- 想看 **RAG 与知识检索应用**：从 [MediRAG](https://github.com/GOOD-123-CPU/medirag-open) 和 [LexAtlas](https://github.com/GOOD-123-CPU/LexAtlas) 开始。
-- 想看 **数据产品与可视化界面**：从 [ScreenWeaver](https://github.com/GOOD-123-CPU/screenweaver) 开始。
 
 ## 更多探索
 
