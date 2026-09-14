@@ -40,6 +40,22 @@ CI 执行类型检查、单元测试和生产构建。仓库的哈希伪向量�
 
 [架构与接口](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/ARCHITECTURE.md) · [评估范围](https://github.com/GOOD-123-CPU/medirag-open#readme) · [CI](https://github.com/GOOD-123-CPU/medirag-open/actions/workflows/ci.yml)
 
+## 4. Itinera：模型输出如何进入产品流程
+
+`src/lib/itinerary.ts` 将行程解析和兜底构造组织为纯函数。解析器读取模型返回的 itinerary JSON 代码块，检查标题、步骤数组、时间等字段；输入失败时返回空结果，由调用方选择后续策略。独立的 `tests/itinerary.test.ts` 提供解析及兜底行为的测试入口。
+
+这体现了把模型输出作为待校验输入的工程边界。字段形状检查仍不等于现实约束验证：时间顺序、实际营业时间、路线可达性和真实预订需要额外数据与业务校验。当前项目明确将天气、预订和部分数据定位为演示。
+
+[行程引擎](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [测试](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts) · [API](https://github.com/GOOD-123-CPU/itinera/blob/main/API.md)
+
+## 5. HanBayes 与 VoxFrontier：研究代码的工程表达
+
+HanBayes 的 `ChineseSentimentAnalyzer` 提供统一训练入口，将共享特征处理与具体模型实现分开，并提供解释接口、冻结配置和实验结果文件。VoxFrontier 的 manifest 写入输入与结果表的 SHA-256、环境信息、随机种子和运行摘要，使结果漂移可以被核查。
+
+这里应区分两种承诺：文件哈希能检查文件是否一致；统计结论是否成立仍取决于数据、方法和实验协议。主页因此同时链接实现、方法说明和原始结果。
+
+[HanBayes API](https://github.com/GOOD-123-CPU/hanbayes/blob/main/src/hanbayes/analyzer.py) · [VoxFrontier manifest](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/src/voxfrontier/utils/manifest.py)
+
 ## 可核查的交付记录
 
 以下是核查时已成功完成的工作流记录；它们只证明对应提交的检查结果，不代表未来提交或所有部署环境。
@@ -52,5 +68,7 @@ CI 执行类型检查、单元测试和生产构建。仓库的哈希伪向量�
 | VoxFrontier | [CI run 34740061138](https://github.com/GOOD-123-CPU/voxFrontier/actions/runs/34740061138) |
 
 ## 技术交流
+
+全部公开仓库及其阅读入口见 [项目目录](PROJECTS.md)。目录覆盖工程产品、研究分析、领域应用、工具和写作成果；没有应用 CI 的项目会单独注明，不与已通过构建的项目混淆。
 
 讨论实现时，可在对应仓库 Issue 中提供运行环境、复现步骤、预期与实际结果。方法讨论可附数据版本、配置和原始指标，方便核对与复现。

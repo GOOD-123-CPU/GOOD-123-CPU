@@ -1,12 +1,14 @@
 # David Zhu
 
-**AI Applications · Backend Systems · Data Visualization**
+**Software Engineering · AI Applications · Reproducible Data Science**
 
 你好，我是 David Zhu，数据科学与大数据技术方向。我构建检索问答系统、业务工作台和数据可视化工具，关注模块边界、异步资源管理、自动化测试与可复现交付。
 
 I build AI applications and data tools with explicit interfaces, testable components, and reproducible delivery. My projects span Java backends, TypeScript interfaces, and Python research pipelines.
 
-[工程项目](#工程项目) · [设计与实现](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/ENGINEERING.md) · [研究结果](#研究结果) · [全部仓库](https://github.com/GOOD-123-CPU?tab=repositories)
+[工程项目](#工程项目) · [设计与实现](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/ENGINEERING.md) · [完整项目目录](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/PROJECTS.md) · [研究结果](#研究结果)
+
+从 **ScreenWeaver** 看可复用引擎，从 **Itinera** 看完整产品流程，从 **MediRAG** 看 Java 后端；**HanBayes** 和 **VoxFrontier** 展示模型实现与实验复现。下面的作品按这些不同能力选择。
 
 ## 工程项目
 
@@ -19,6 +21,23 @@ I build AI applications and data tools with explicit interfaces, testable compon
 [在线演示](https://good-123-cpu.github.io/screenweaver/) · [架构与取舍](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/architecture.md) · [连接与生命周期](https://github.com/GOOD-123-CPU/screenweaver/blob/main/src/engine/useSources.ts)
 
 [![ScreenWeaver CI](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml)
+
+### Itinera / AI 行程产品原型
+
+将自然语言需求转换为结构化行程，再呈现为时间线、地图和费用明细。行程解析与兜底逻辑独立为纯函数，模型输出经过字段检查；天气和预订等流程包含演示逻辑。
+
+**Next.js · TypeScript · Prisma · SQLite · Leaflet**
+
+[产品截图与启动](https://github.com/GOOD-123-CPU/itinera#readme) · [行程引擎](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [测试](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts)
+
+[![Itinera CI](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml)
+
+<details>
+<summary>查看 Itinera 产品界面</summary>
+
+[![Itinera 行程界面](https://raw.githubusercontent.com/GOOD-123-CPU/itinera/main/docs/screenshots/readme-itinerary.png)](https://github.com/GOOD-123-CPU/itinera)
+
+</details>
 
 ### MediRAG / 检索问答系统
 
@@ -57,7 +76,6 @@ I build AI applications and data tools with explicit interfaces, testable compon
 | :--- | :--- | :--- |
 | **[HanBayes](https://github.com/GOOD-123-CPU/hanbayes)** | 中文情感分类：贝叶斯基线、特征加权与可解释预测 | [模型对比结果](https://github.com/GOOD-123-CPU/hanbayes/blob/main/results/final_test_metrics.csv) · [算法说明](https://github.com/GOOD-123-CPU/hanbayes/blob/main/docs/algorithm.md) |
 | **[VoxFrontier](https://github.com/GOOD-123-CPU/voxFrontier)** | 直播效率分析：DEA、归因、Double ML 与反事实模拟 | [方法与假设](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/methodology.md) · [复现指南](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/user_guide.md) |
-| **[Research Figure Workbench](https://github.com/GOOD-123-CPU/research-figure-workbench)** | 科研制图工作流：数据溯源、图表检查与可编辑导出 | [工作流与使用说明](https://github.com/GOOD-123-CPU/research-figure-workbench#readme) |
 
 ## 研究结果
 
@@ -95,8 +113,11 @@ SDFWNB 相比 StandardNB，Accuracy 提高 **2.80 个百分点**，Macro-F1 提�
 
 ## 更多探索
 
-- **知识与 AI 应用**：[LexAtlas 法律知识检索](https://github.com/GOOD-123-CPU/LexAtlas) · [NutriMentor 营养教育](https://github.com/GOOD-123-CPU/nutrimentor) · [OpenInterview 智能面试](https://github.com/GOOD-123-CPU/OpenInterview)
-- **金融与业务研究**：[AlphaDebate 多智能体研究](https://github.com/GOOD-123-CPU/AlphaDebate-FinResearch) · [绿证交易平台](https://github.com/GOOD-123-CPU/green-cert-trading) · [绿色金融文献综述](https://github.com/GOOD-123-CPU/green-finance-high-quality-development-review)
+[完整项目目录](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/PROJECTS.md) 按工程产品、研究方法、领域 AI 与工具组织全部公开仓库，每个项目都附实现入口和验证范围。
+
+- **知识与 AI 应用**：[LexAtlas](https://github.com/GOOD-123-CPU/LexAtlas) · [NutriMentor](https://github.com/GOOD-123-CPU/nutrimentor) · [OpenInterview](https://github.com/GOOD-123-CPU/OpenInterview)
+- **金融与业务系统**：[AlphaDebate / FinSightPro](https://github.com/GOOD-123-CPU/AlphaDebate-FinResearch) · [Investment Committee](https://github.com/GOOD-123-CPU/investment-committee) · [绿证交易](https://github.com/GOOD-123-CPU/green-cert-trading) · [Gavel 拍卖](https://github.com/GOOD-123-CPU/gavel)
+- **科研工具与写作**：[Research Figure Workbench](https://github.com/GOOD-123-CPU/research-figure-workbench) · [绿色金融综述](https://github.com/GOOD-123-CPU/green-finance-high-quality-development-review)
 
 ## 交流
 
