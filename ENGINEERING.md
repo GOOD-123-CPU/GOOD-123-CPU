@@ -128,7 +128,7 @@ HanBayes 已有 frozen config、最终指标、McNemar 表和 paired bootstrap �
 | :--- | :--- | :--- |
 | ScreenWeaver | [CI 35949190502](https://github.com/GOOD-123-CPU/screenweaver/actions/runs/35949190502) | HTTP 生命周期修复与测试 |
 | Itinera | [CI 35950603865](https://github.com/GOOD-123-CPU/itinera/actions/runs/35950603865) | 语义行程约束与 canonical action binding |
-| MediRAG | [CI 35950830905](https://github.com/GOOD-123-CPU/medirag-open/actions/runs/35950830905) | label-aware evaluation、依赖审计、构建/扫描 |
+| MediRAG | [CI 35950879245](https://github.com/GOOD-123-CPU/medirag-open/actions/runs/35950879245) | label-aware evaluation、依赖审计、构建/扫描 |
 | OpenInterview | [CI 35950927142](https://github.com/GOOD-123-CPU/OpenInterview/actions/runs/35950927142) | 62 tests、Python matrix、task lease |
 | Investment Committee | [CI 35950863817](https://github.com/GOOD-123-CPU/investment-committee/actions/runs/35950863817) | deterministic-core tests + production build |
 | HanBayes | [CI 35950628672](https://github.com/GOOD-123-CPU/hanbayes/actions/runs/35950628672) | statistical primitives + artifact contract |
