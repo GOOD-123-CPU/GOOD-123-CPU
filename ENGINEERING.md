@@ -2,19 +2,19 @@
 
 [返回主页](https://github.com/GOOD-123-CPU)
 
-这里按工程问题组织项目入口，便于检查实现、理解取舍和复现验证。阅读基准为 2026-09-14；源码链接固定到核查版本，工作流链接指向持续更新的记录。
+这里按工程问题组织项目入口，便于检查实现、理解取舍和复现验证。阅读基准更新至 2026-09-24；源码链接尽量固定到核查版本，工作流链接指向持续更新的记录。
 
 ## 1. ScreenWeaver：配置如何变成持续更新的界面
 
 **边界。** 配置描述布局、组件和数据源；引擎将数据源转换为响应式状态；渲染层通过注册表分派组件。业务组件用 key 订阅数据，数据接入方式集中在引擎中。
 
-**资源生命周期。** WebSocket 断开后按指数退避重连，上限 30 秒；成功连接后重置重试计数。Vue 组件卸载时清理轮询定时器并关闭连接，关闭标志阻止后续重连。
+**资源生命周期。** WebSocket 断开后按指数退避重连，上限 30 秒；成功连接后重置重试计数。HTTP 数据源为每个 source 维护单独的 `AbortController`：上一轮请求未完成时跳过新的轮询，组件卸载时取消在途请求。WebSocket 与轮询定时器也在卸载时统一清理。
 
 **取舍。** 固定设计尺寸并整体等比缩放有利于保留大屏的相对位置，但不同宽高比会留白。声明式配置便于复用，同时需要显式的字段验证和扩展契约。
 
-**当前边界。** HTTP 轮询使用 `setInterval`，没有等待上次请求结束；慢请求可能重叠。当前函数也没有检查 `res.ok` 或取消在途请求。后续可靠性工作应包括响应状态检查、超时与取消、避免轮询重叠，以及重连加入抖动。这些是待完善项。
+**当前边界。** HTTP 请求现在会检查 `res.ok`，慢请求不会叠加，并支持在卸载时取消；这些行为有单元测试覆盖。仍未实现显式请求超时策略，WebSocket 指数退避也尚未加入 jitter。真实网络抖动、浏览器切后台与长时间运行场景仍需要单独的集成/端到端验证。
 
-[架构](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/architecture.md) · [核查版本源码](https://github.com/GOOD-123-CPU/screenweaver/blob/0b5286b81e812f5f9df97a60486165896182c6c6/src/engine/useSources.ts) · [CI](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml)
+[架构](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/architecture.md) · [核查版本源码](https://github.com/GOOD-123-CPU/screenweaver/blob/5b85c528f7a1c3f65e286adc5405da42bfa6d5ac/src/engine/useSources.ts) · [HTTP 数据源测试](https://github.com/GOOD-123-CPU/screenweaver/blob/5b85c528f7a1c3f65e286adc5405da42bfa6d5ac/tests/engine.spec.ts) · [CI](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml)
 
 CI 执行依赖安装、示例配置校验、单元测试、类型检查与应用构建、库构建。网络中断与真实浏览器场景仍应单独验证。
 
@@ -62,7 +62,7 @@ HanBayes 的 `ChineseSentimentAnalyzer` 提供统一训练入口，将共享特�
 
 | 项目 | 成功记录 |
 | :--- | :--- |
-| ScreenWeaver | [CI run 34759470616](https://github.com/GOOD-123-CPU/screenweaver/actions/runs/34759470616) |
+| ScreenWeaver | [CI run 35949190502](https://github.com/GOOD-123-CPU/screenweaver/actions/runs/35949190502)（2026-09-24，含 HTTP 生命周期修复与测试） |
 | Retail Audit Agent | [CI run 34741136840](https://github.com/GOOD-123-CPU/retail-audit-agent/actions/runs/34741136840) |
 | MediRAG | [CI run 34741206405](https://github.com/GOOD-123-CPU/medirag-open/actions/runs/34741206405) |
 | VoxFrontier | [CI run 34740061138](https://github.com/GOOD-123-CPU/voxFrontier/actions/runs/34740061138) |
