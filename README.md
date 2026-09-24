@@ -1,124 +1,92 @@
 # David Zhu
 
-**Software Engineering · AI Applications · Reproducible Data Science**
+**AI / Software Engineer · Java & TypeScript · Reproducible Data Science**
 
-你好，我是 David Zhu，数据科学与大数据技术方向。我构建检索问答系统、业务工作台和数据可视化工具，关注模块边界、异步资源管理、自动化测试与可复现交付。
+你好，我是 David Zhu，数据科学与大数据技术背景。我更关注怎样把模型、数据与业务约束组织成**可验证、可维护、可复现的软件系统**：让确定性代码负责事实与规则，让模型负责生成与推理，并通过测试、CI、失败兜底和实验记录把边界写清楚。
 
-I build AI applications and data tools with explicit interfaces, testable components, and reproducible delivery. My projects span Java backends, TypeScript interfaces, and Python research pipelines.
+I build AI applications and data systems with explicit interfaces, deterministic guardrails, testable components, and reproducible delivery. My work spans Java/Spring backends, TypeScript product engineering, and Python research pipelines.
 
-[工程项目](#工程项目) · [设计与实现](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/ENGINEERING.md) · [完整项目目录](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/PROJECTS.md) · [研究结果](#研究结果)
+[工程阅读指南](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/ENGINEERING.md) · [完整项目目录](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/PROJECTS.md)
 
-从 **ScreenWeaver** 看可复用引擎，从 **Itinera** 看完整产品流程，从 **MediRAG** 看 Java 后端；**HanBayes** 和 **VoxFrontier** 展示模型实现与实验复现。下面的作品按这些不同能力选择。
+> **Public release history.** Several projects were developed and iterated locally before being open-sourced together in September 2026. Repository creation dates therefore reflect public release dates rather than project start dates. I do not rewrite or fabricate historical commits; ongoing improvements are recorded normally on GitHub.
 
-## 工程项目
+## Selected work
 
-### ScreenWeaver / 配置驱动的可视化引擎
+### MediRAG · Java RAG backend
 
-将 JSON 配置、数据源管理与 Vue 渲染分层；通过组件注册表扩展图表，支持 HTTP 轮询和 WebSocket 数据。适合先体验，再阅读实现。
+把 Query 改写、混合召回、RRF、重排序、置信度判断、引用与 SSE 生成组织为可检查的流水线；MySQL、Milvus、MinIO 与 Redis 分担不同存储职责。离线检索评估与完整在线 RAG 效果明确区分。
 
-**Vue 3 · TypeScript · ECharts**
+**Java 17 · Spring Boot · Vue 3 · Milvus · Redis · MinIO**
 
-[在线演示](https://good-123-cpu.github.io/screenweaver/) · [架构与取舍](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/architecture.md) · [连接与生命周期](https://github.com/GOOD-123-CPU/screenweaver/blob/main/src/engine/useSources.ts)
-
-[![ScreenWeaver CI](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml)
-
-### Itinera / AI 行程产品原型
-
-将自然语言需求转换为结构化行程，再呈现为时间线、地图和费用明细。行程解析与兜底逻辑独立为纯函数，模型输出经过字段检查；天气和预订等流程包含演示逻辑。
-
-**Next.js · TypeScript · Prisma · SQLite · Leaflet**
-
-[产品截图与启动](https://github.com/GOOD-123-CPU/itinera#readme) · [行程引擎](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [测试](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts)
-
-[![Itinera CI](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml)
-
-<details>
-<summary>查看 Itinera 产品界面</summary>
-
-[![Itinera 行程界面](https://raw.githubusercontent.com/GOOD-123-CPU/itinera/main/docs/screenshots/readme-itinerary.png)](https://github.com/GOOD-123-CPU/itinera)
-
-</details>
-
-### MediRAG / 检索问答系统
-
-以独立组件组织召回、融合、重排序和回答生成。工程阅读重点是 REST/SSE 接口、存储职责、请求追踪与部署依赖。
-
-**Java · Spring Boot · Vue 3 · Milvus · Redis · MinIO**
-
-[系统架构](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/ARCHITECTURE.md) · [检索链路](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/rag-pipeline.md) · [启动与评估边界](https://github.com/GOOD-123-CPU/medirag-open#readme)
+[架构](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/ARCHITECTURE.md) · [RAG 链路](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/rag-pipeline.md) · [仓库](https://github.com/GOOD-123-CPU/medirag-open)
 
 [![MediRAG CI](https://github.com/GOOD-123-CPU/medirag-open/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/medirag-open/actions/workflows/ci.yml)
 
-### Retail Audit Agent / 业务流程工作台
+### Itinera · AI product workflow
 
-连接资料解析、规则分析、模型解释和报告生成。分析编排限制解释调用的并发数，并保留风险与解释的对应顺序。
+自然语言需求进入产品流程前先被解析成受约束的结构化行程；模型输出被当作不可信输入，解析、字段校验与 deterministic fallback 独立为纯函数并有单元测试。
 
-**Next.js · React · TypeScript · SQLite / MySQL**
+**Next.js · TypeScript · Prisma · SQLite · Leaflet**
 
-[本地体验](https://github.com/GOOD-123-CPU/retail-audit-agent#readme) · [分析编排源码](https://github.com/GOOD-123-CPU/retail-audit-agent/blob/main/lib/analysis.ts) · [测试与构建](https://github.com/GOOD-123-CPU/retail-audit-agent/blob/main/.github/workflows/ci.yml)
+[行程引擎](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [测试](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts) · [仓库](https://github.com/GOOD-123-CPU/itinera)
 
-[![Retail Audit CI](https://github.com/GOOD-123-CPU/retail-audit-agent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/retail-audit-agent/actions/workflows/ci.yml)
+[![Itinera CI](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml)
 
-## 工程实践
+### ScreenWeaver · Configuration-driven visualization engine
 
-| 关注点 | 可检查的实现 |
+将 JSON schema、数据源生命周期、组件注册表与 Vue 渲染层拆分。支持 static / mock / HTTP / WebSocket 数据源与 GitHub Pages 在线演示，重点关注数据接入、资源释放和可扩展组件边界。
+
+**Vue 3 · TypeScript · ECharts**
+
+[在线演示](https://good-123-cpu.github.io/screenweaver/) · [架构](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/architecture.md) · [数据源实现](https://github.com/GOOD-123-CPU/screenweaver/blob/main/src/engine/useSources.ts)
+
+[![ScreenWeaver CI](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml)
+
+### OpenInterview · Asynchronous AI workflow
+
+从简历解析、结构化出题、语音面试到报告生成形成完整状态流；worker 将耗时任务从请求路径拆开，安全、API、业务流程与 LLM 适配层均有离线测试。AI 评价被明确定位为辅助信息，而不是自动录用决策。
+
+**Python · Flask · SQLite · Whisper · Docker**
+
+[架构与 ADR](https://github.com/GOOD-123-CPU/OpenInterview/blob/main/docs/architecture.md) · [测试](https://github.com/GOOD-123-CPU/OpenInterview/tree/main/app/tests) · [仓库](https://github.com/GOOD-123-CPU/OpenInterview)
+
+[![OpenInterview CI](https://github.com/GOOD-123-CPU/OpenInterview/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/OpenInterview/actions/workflows/ci.yml)
+
+### HanBayes · Interpretable ML experiment
+
+从 Multinomial NB 基线逐步加入互信息特征权重、冗余抑制与稀疏类别条件依赖修正。冻结配置、最终结果、McNemar 检验与 paired bootstrap 共同组成可复现实验证据链。
+
+**Python · Sparse linear algebra · Statistical testing**
+
+[算法说明](https://github.com/GOOD-123-CPU/hanbayes/blob/main/docs/algorithm.md) · [冻结配置](https://github.com/GOOD-123-CPU/hanbayes/blob/main/configs/frozen.json) · [结果](https://github.com/GOOD-123-CPU/hanbayes/blob/main/results/final_test_metrics.csv)
+
+[![HanBayes CI](https://github.com/GOOD-123-CPU/hanbayes/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/hanbayes/actions/workflows/ci.yml)
+
+### VoxFrontier · Reproducible analytics pipeline
+
+用合成直播数据连接 DEA、贡献归因、Double ML 与反事实模拟。每次运行写入输入和结果表 SHA-256、随机种子、依赖环境与摘要，使“结果是否为同一次运行”可以被重新核验。
+
+**Python · Causal inference · Reproducible research**
+
+[方法与假设](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/methodology.md) · [Manifest 实现](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/src/voxfrontier/utils/manifest.py) · [仓库](https://github.com/GOOD-123-CPU/voxFrontier)
+
+## Engineering principles
+
+| 关注点 | 公开项目里的实现 |
 | :--- | :--- |
-| 模块与接口 | ScreenWeaver 的配置、数据源和组件注册；MediRAG 的分阶段检索链路 |
-| 资源与失败处理 | WebSocket 指数退避、卸载时关闭连接；模型解释的有界并发 |
-| 验证与交付 | 配置校验、类型检查、单元测试、应用构建和库构建；工作流见各项目 CI |
-| 实验可复现 | HanBayes 冻结配置与结果 CSV；VoxFrontier 合成数据与运行 manifest |
+| **Deterministic core** | Itinera 结构化解析与 fallback；Investment Committee 用代码计算的量化指标覆盖模型返回值 |
+| **Model output is untrusted** | JSON 形状校验、分数钳制、来源限制、低置信度拒答/兜底 |
+| **Failure-aware orchestration** | 有界并发、组件级降级、异步 worker、缓存与流式错误处理 |
+| **Verification** | Type checking、unit tests、build checks、secret scanning、跨 Python/OS CI |
+| **Reproducibility** | HanBayes frozen config / raw metrics；VoxFrontier run manifest / SHA-256 |
 
-[工程阅读指南](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/ENGINEERING.md) 记录源码入口、实现取舍和待完善的边界。CI 徽章展示工作流状态，性能与业务效果需要各自的评估证据。
+CI 证明的是对应提交的自动检查结果，不等同于业务效果、模型质量或生产可靠性；这些结论需要各自的 benchmark、集成测试与真实运行证据。
 
-## 研究与工具
+## More projects
 
-| 项目 | 解决的问题 | 从这里开始 |
-| :--- | :--- | :--- |
-| **[HanBayes](https://github.com/GOOD-123-CPU/hanbayes)** | 中文情感分类：贝叶斯基线、特征加权与可解释预测 | [模型对比结果](https://github.com/GOOD-123-CPU/hanbayes/blob/main/results/final_test_metrics.csv) · [算法说明](https://github.com/GOOD-123-CPU/hanbayes/blob/main/docs/algorithm.md) |
-| **[VoxFrontier](https://github.com/GOOD-123-CPU/voxFrontier)** | 直播效率分析：DEA、归因、Double ML 与反事实模拟 | [方法与假设](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/methodology.md) · [复现指南](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/user_guide.md) |
+- **Knowledge & RAG:** [LexAtlas](https://github.com/GOOD-123-CPU/LexAtlas) · [NutriMentor](https://github.com/GOOD-123-CPU/nutrimentor)
+- **AI + business:** [Retail Audit Agent](https://github.com/GOOD-123-CPU/retail-audit-agent) · [AlphaDebate / FinSightPro](https://github.com/GOOD-123-CPU/AlphaDebate-FinResearch) · [Investment Committee](https://github.com/GOOD-123-CPU/investment-committee)
+- **Java business systems:** [Green Certificate Trading](https://github.com/GOOD-123-CPU/green-cert-trading) · [Gavel](https://github.com/GOOD-123-CPU/gavel)
+- **Research tooling & writing:** [Research Figure Workbench](https://github.com/GOOD-123-CPU/research-figure-workbench) · [Green Finance Literature Review](https://github.com/GOOD-123-CPU/green-finance-high-quality-development-review)
 
-## 研究结果
-
-<details>
-<summary>HanBayes 模型对比与 VoxFrontier 分析图</summary>
-
-### HanBayes · 中文情感分类
-
-仓库已提交的模型对比结果：
-
-| 模型 | Accuracy | Macro-F1 | AUC |
-| :--- | ---: | ---: | ---: |
-| StandardNB | 0.7793 | 0.7786 | 0.8505 |
-| FWNB | 0.8022 | 0.8009 | 0.8770 |
-| DFWNB-v2 | 0.8048 | 0.8033 | 0.8822 |
-| **SDFWNB** | **0.8073** | **0.8065** | **0.8867** |
-
-SDFWNB 相比 StandardNB，Accuracy 提高 **2.80 个百分点**，Macro-F1 提高 **0.0279**。这些是仓库保存的实验结果，不是实时评测，也不代表在其他数据集上的表现。
-
-[![HanBayes 模型对比图](https://raw.githubusercontent.com/GOOD-123-CPU/hanbayes/main/docs/assets/benchmark.png)](https://github.com/GOOD-123-CPU/hanbayes)
-
-[原始结果 CSV](https://github.com/GOOD-123-CPU/hanbayes/blob/main/results/final_test_metrics.csv) · [冻结配置](https://github.com/GOOD-123-CPU/hanbayes/blob/main/configs/frozen.json) · [复现入口](https://github.com/GOOD-123-CPU/hanbayes#readme)
-
-### VoxFrontier · 效率分析与因果估计
-
-从合成数据出发，连接 **效率测度 → 贡献归因 → 因果估计 → 情景模拟**，保留方法说明、结果表与运行记录。
-
-[![VoxFrontier 合成数据分析总览](https://raw.githubusercontent.com/GOOD-123-CPU/voxFrontier/main/figures/dashboard.png)](https://github.com/GOOD-123-CPU/voxFrontier)
-
-示例用于展示分析方法，不代表真实平台的实证结论；因果解释依赖识别假设，情景模拟也不等于经过验证的干预效果。
-
-[方法与假设](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/methodology.md) · [使用与复现](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/docs/user_guide.md)
-
-</details>
-
-## 更多探索
-
-[完整项目目录](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/PROJECTS.md) 按工程产品、研究方法、领域 AI 与工具组织全部公开仓库，每个项目都附实现入口和验证范围。
-
-- **知识与 AI 应用**：[LexAtlas](https://github.com/GOOD-123-CPU/LexAtlas) · [NutriMentor](https://github.com/GOOD-123-CPU/nutrimentor) · [OpenInterview](https://github.com/GOOD-123-CPU/OpenInterview)
-- **金融与业务系统**：[AlphaDebate / FinSightPro](https://github.com/GOOD-123-CPU/AlphaDebate-FinResearch) · [Investment Committee](https://github.com/GOOD-123-CPU/investment-committee) · [绿证交易](https://github.com/GOOD-123-CPU/green-cert-trading) · [Gavel 拍卖](https://github.com/GOOD-123-CPU/gavel)
-- **科研工具与写作**：[Research Figure Workbench](https://github.com/GOOD-123-CPU/research-figure-workbench) · [绿色金融综述](https://github.com/GOOD-123-CPU/green-finance-high-quality-development-review)
-
-## 交流
-
-欢迎通过对应项目的 **Issues** 讨论方法、反馈问题或交流复现结果。项目的安装步骤、依赖和适用边界以各仓库文档为准。
+完整仓库、源码入口与验证范围见 [PROJECTS.md](https://github.com/GOOD-123-CPU/GOOD-123-CPU/blob/main/PROJECTS.md)。方法、实现或复现问题欢迎在对应仓库 Issue 中讨论。
