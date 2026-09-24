@@ -2,45 +2,42 @@
 
 **Reliable AI Systems · Backend Engineering · Reproducible Data Science**
 
-I build AI applications where model output is treated as **untrusted input** and product behavior is enforced by deterministic code, explicit validation, tests, CI, fallback paths, and reproducible evidence.
+I build software around a simple rule: **model output is untrusted until deterministic code verifies it**.
 
-我关注的不是“把模型接进产品”本身，而是怎样把不确定的模型能力放进**可验证、可维护、可复现的软件边界**：模型负责生成与推理，代码负责事实、规则、状态与最终可执行动作。
+我的重点不是“把 AI 接进产品”，而是把不确定的模型能力放进**可验证、可维护、可复现的软件边界**：模型负责生成与推理，代码负责事实、规则、状态与最终可执行动作。
 
-[Engineering evidence](ENGINEERING.md) · [All projects](PROJECTS.md)
+[Engineering evidence](ENGINEERING.md) · [Project catalog](PROJECTS.md)
 
 ---
 
-## Flagship work
+## Flagship engineering work
 
-### MediRAG — evidence-aware RAG system
+| Project | Engineering problem | Evidence |
+| --- | --- | --- |
+| **[MediRAG](https://github.com/GOOD-123-CPU/medirag-open)** | Build a medical RAG pipeline without confusing retrieval proxies with labelled evaluation | Hybrid retrieval + RRF + reranking; explicit qrels-only Recall/MRR contract; CI and evaluation tooling |
+| **[OpenInterview](https://github.com/GOOD-123-CPU/OpenInterview)** | Keep asynchronous AI workflows safe under concurrent workers and failures | Atomic SQLite task leases, expiry recovery, multi-version tests, CI |
+| **[Itinera](https://github.com/GOOD-123-CPU/itinera)** | Prevent LLM-generated plans from becoming unsafe product actions | Calendar/time/coordinate/ID validation, deterministic fallback, canonical database rebinding |
 
-Java/Spring Boot medical knowledge RAG with hybrid retrieval, RRF, reranking, confidence handling, citations, and SSE generation. The evaluation layer distinguishes real qrels from keyword proxies: Recall/MRR is only reported when explicit relevance labels exist.
+### MediRAG
+Java / Spring Boot · Vue 3 · Milvus · Redis · MinIO
 
-**Java 17 · Spring Boot · Vue 3 · Milvus · Redis · MinIO**
+Medical knowledge RAG with hybrid retrieval, reranking, confidence handling, citations, and SSE generation. The evaluation layer reports Recall/MRR only when explicit relevance labels exist and keeps lexical proxy metrics visibly separate.
 
-[Repository](https://github.com/GOOD-123-CPU/medirag-open) · [Architecture](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/ARCHITECTURE.md) · [RAG pipeline](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/rag-pipeline.md)
+[Architecture](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/ARCHITECTURE.md) · [RAG pipeline](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/rag-pipeline.md) · [CI](https://github.com/GOOD-123-CPU/medirag-open/actions/workflows/ci.yml)
 
-[![MediRAG CI](https://github.com/GOOD-123-CPU/medirag-open/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/medirag-open/actions/workflows/ci.yml)
+### OpenInterview
+Python · Flask · SQLite · Whisper · Docker
 
-### OpenInterview — failure-aware asynchronous workflow
+Resume parsing, structured question generation, speech interview processing, and report generation coordinated through explicit product state. Atomic task leases prevent concurrent workers from processing the same entity while expired leases permit recovery after worker failure.
 
-Resume parsing, structured question generation, speech interview processing, and report generation are coordinated through explicit product state. SQLite task leases use atomic transactions to prevent concurrent workers from processing the same task, while expired leases allow recovery after worker failure.
+[Architecture / ADR](https://github.com/GOOD-123-CPU/OpenInterview/blob/main/docs/architecture.md) · [Tests](https://github.com/GOOD-123-CPU/OpenInterview/tree/main/app/tests) · [CI](https://github.com/GOOD-123-CPU/OpenInterview/actions/workflows/ci.yml)
 
-**Python · Flask · SQLite · Whisper · Docker**
+### Itinera
+Next.js · TypeScript · Prisma · SQLite · Leaflet
 
-[Repository](https://github.com/GOOD-123-CPU/OpenInterview) · [Architecture / ADR](https://github.com/GOOD-123-CPU/OpenInterview/blob/main/docs/architecture.md) · [Tests](https://github.com/GOOD-123-CPU/OpenInterview/tree/main/app/tests)
+Natural-language plans are parsed into structured itineraries and checked by deterministic semantic guards before downstream actions: real calendar dates, time ordering, overlap, coordinate validity, and retrieval-bound IDs.
 
-[![OpenInterview CI](https://github.com/GOOD-123-CPU/OpenInterview/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/OpenInterview/actions/workflows/ci.yml)
-
-### Itinera — LLM output constrained before product actions
-
-Natural-language plans are parsed into a structured itinerary and checked by deterministic semantic guards: real calendar dates, time ordering, overlap, coordinate validity, and retrieval-bound venue IDs. Executable reservation actions are rebound to canonical database records rather than trusting model-generated names.
-
-**Next.js · TypeScript · Prisma · SQLite · Leaflet**
-
-[Repository](https://github.com/GOOD-123-CPU/itinera) · [Itinerary engine](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [Tests](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts)
-
-[![Itinera CI](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml)
+[Itinerary engine](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [Tests](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts) · [CI](https://github.com/GOOD-123-CPU/itinera/actions/workflows/ci.yml)
 
 ---
 
@@ -63,27 +60,33 @@ tests + CI + reproducible evidence
 | Principle | Public examples |
 | --- | --- |
 | **Deterministic core** | Itinera semantic guards; Investment Committee numeric scoring |
-| **Model output is untrusted** | retrieval-bound IDs, validation, clamps, abstention/fallback |
+| **Model output is untrusted** | retrieval-bound IDs, validation, clamps, abstention / fallback |
 | **Failure-aware orchestration** | OpenInterview task leases; bounded concurrency; cleanup and retry paths |
 | **Verification** | unit/statistical tests, type checks, production builds, secret/dependency scanning |
 | **Reproducibility** | HanBayes frozen artifacts; VoxFrontier run manifests and SHA-256 hashes |
 
-CI proves that automated checks passed for a specific revision. It does **not** by itself prove model quality, business impact, or production reliability. Those claims require separate benchmarks, integration evidence, or real-world operation.
+> CI proves that automated checks passed for a specific revision. It does **not** by itself prove model quality, business impact, or production reliability. Those require separate benchmarks, integration evidence, or real-world operation.
 
-## More selected work
+---
 
-- **ScreenWeaver** — configuration-driven Vue/ECharts visualization engine with HTTP/WebSocket lifecycle handling and a [live demo](https://good-123-cpu.github.io/screenweaver/).
-- **HanBayes** — interpretable Bayesian Chinese sentiment experiments with exact McNemar tests, seeded paired bootstrap, frozen configuration, and published-artifact consistency checks.
-- **VoxFrontier** — reproducible DEA / attribution / Double-ML research pipeline with run manifests and file hashes.
-- **Investment Committee** — deterministic quantitative core wrapped by multi-agent research and risk-review workflows.
-- **LexAtlas / NutriMentor** — domain RAG systems showing the same reliability pattern in legal and nutrition contexts.
+## Selected work
 
-See the complete, categorized catalog in [PROJECTS.md](PROJECTS.md).
+- **[ScreenWeaver](https://github.com/GOOD-123-CPU/screenweaver)** — configuration-driven Vue/ECharts visualization engine with HTTP/WebSocket lifecycle handling and a **[live demo](https://good-123-cpu.github.io/screenweaver/)**.
+- **[HanBayes](https://github.com/GOOD-123-CPU/hanbayes)** — interpretable Bayesian Chinese sentiment experiments with exact McNemar tests, seeded paired bootstrap, frozen configuration, and artifact-consistency checks.
+- **[VoxFrontier](https://github.com/GOOD-123-CPU/voxFrontier)** — reproducible DEA / attribution / Double-ML research pipeline with run manifests and file hashes.
+- **[Investment Committee](https://github.com/GOOD-123-CPU/investment-committee)** — deterministic quantitative core wrapped by multi-agent research and risk-review workflows.
+- **[LexAtlas](https://github.com/GOOD-123-CPU/LexAtlas)** / **[NutriMentor](https://github.com/GOOD-123-CPU/nutrimentor)** — domain RAG systems showing the same reliability pattern in legal and nutrition contexts.
+
+See the full categorized inventory and repository notes in **[PROJECTS.md](PROJECTS.md)**.
+
+---
 
 ## Public release history
 
-Several projects were developed and iterated locally before being open-sourced together in September 2026, so repository creation dates reflect public release dates rather than original project start dates. I do not rewrite or fabricate historical commits; ongoing engineering changes are recorded normally through issues, commits, pull requests, CI, and releases.
+Several projects were developed and iterated locally before being open-sourced together in September 2026. Repository creation dates therefore reflect **public release dates**, not necessarily original project start dates.
+
+I do not rewrite or fabricate historical commits. Ongoing engineering changes are recorded normally through issues, commits, pull requests, CI, and releases.
 
 ## Contact / technical discussion
 
-For implementation questions, reproducibility issues, or bug reports, please open an issue in the relevant repository with the environment, reproduction steps, expected behavior, and observed behavior.
+For implementation questions, reproducibility issues, or bug reports, open an issue in the relevant repository with the environment, reproduction steps, expected behavior, and observed behavior.
