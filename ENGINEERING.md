@@ -2,73 +2,142 @@
 
 [返回主页](https://github.com/GOOD-123-CPU)
 
-这里按工程问题组织项目入口，便于检查实现、理解取舍和复现验证。阅读基准更新至 2026-09-24；源码链接尽量固定到核查版本，工作流链接指向持续更新的记录。
+这里按工程问题组织项目入口，便于检查实现、理解取舍和复现验证。阅读基准更新至 **2026-09-24**。本文只描述已经能从公开源码、测试或工作流中核查的事实；CI 成功不等于业务效果、模型质量或生产可靠性。
 
 ## 1. ScreenWeaver：配置如何变成持续更新的界面
 
 **边界。** 配置描述布局、组件和数据源；引擎将数据源转换为响应式状态；渲染层通过注册表分派组件。业务组件用 key 订阅数据，数据接入方式集中在引擎中。
 
-**资源生命周期。** WebSocket 断开后按指数退避重连，上限 30 秒；成功连接后重置重试计数。HTTP 数据源为每个 source 维护单独的 `AbortController`：上一轮请求未完成时跳过新的轮询，组件卸载时取消在途请求。WebSocket 与轮询定时器也在卸载时统一清理。
+**资源生命周期。** WebSocket 断开后按指数退避重连，上限 30 秒；成功连接后重置重试计数。HTTP 数据源为每个 source 维护独立的 `AbortController`：上一轮请求未完成时跳过新的轮询，组件卸载时取消在途请求。HTTP 非 2xx 响应不会被写入业务状态。
 
-**取舍。** 固定设计尺寸并整体等比缩放有利于保留大屏的相对位置，但不同宽高比会留白。声明式配置便于复用，同时需要显式的字段验证和扩展契约。
+**验证。** HTTP 状态码、headers 与 path 提取已有单元测试；配置校验、单测、类型检查、应用构建和库构建进入 CI。
 
-**当前边界。** HTTP 请求现在会检查 `res.ok`，慢请求不会叠加，并支持在卸载时取消；这些行为有单元测试覆盖。仍未实现显式请求超时策略，WebSocket 指数退避也尚未加入 jitter。真实网络抖动、浏览器切后台与长时间运行场景仍需要单独的集成/端到端验证。
+**仍未证明。** 显式请求超时策略、WebSocket jitter、浏览器切后台、真实网络抖动和长时间运行仍需集成或端到端测试。
 
-[架构](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/architecture.md) · [核查版本源码](https://github.com/GOOD-123-CPU/screenweaver/blob/5b85c528f7a1c3f65e286adc5405da42bfa6d5ac/src/engine/useSources.ts) · [HTTP 数据源测试](https://github.com/GOOD-123-CPU/screenweaver/blob/5b85c528f7a1c3f65e286adc5405da42bfa6d5ac/tests/engine.spec.ts) · [CI](https://github.com/GOOD-123-CPU/screenweaver/actions/workflows/ci.yml)
+[架构](https://github.com/GOOD-123-CPU/screenweaver/blob/main/docs/architecture.md) · [数据源实现](https://github.com/GOOD-123-CPU/screenweaver/blob/main/src/engine/useSources.ts) · [测试](https://github.com/GOOD-123-CPU/screenweaver/blob/main/tests/engine.spec.ts)
 
-CI 执行依赖安装、示例配置校验、单元测试、类型检查与应用构建、库构建。网络中断与真实浏览器场景仍应单独验证。
+## 2. Itinera：模型输出怎样才能进入可执行产品流程
 
-## 2. Retail Audit Agent：规则与模型调用如何协作
+`src/lib/itinerary.ts` 不再只回答“JSON 形状是否正确”。结构化输出还要通过确定性语义检查：
 
-**执行顺序。** 读取规则，计算指标与风险，再为每项风险生成解释，最后构造报告和底稿。规则结果与模型解释分开，便于分别检查业务判定和生成内容。
+- 日期必须是合法日历日期；
+- 每个 step 的结束时间必须晚于开始时间；
+- 相邻 step 不得发生时间重叠；
+- 经纬度必须处于合法范围；
+- 模型返回的 `venueId` / `restaurantId` 必须来自本轮数据库检索候选。
 
-**并发约束。** `mapWithConcurrency` 使用共享游标分发任务，将结果写回原始索引；`EXPLAIN_CONCURRENCY = 3` 限制一次分析中的解释并发数。结果顺序与风险顺序一致。
+真正创建 reservation 时，服务端重新按 ID 查找本轮候选并使用数据库中的 canonical name，而不是信任模型生成的地点名称。换言之，**模型可以提出计划，但可执行动作必须重新绑定到服务端事实源**。语义检查失败时不会把该结构直接带入业务动作，而是进入已有 fallback 路径。
 
-**取舍与边界。** 这是单次分析内的并发上限，不是所有请求共享的全局限流。编排层使用 `Promise.all`；如果 worker 抛出未处理异常，整次等待会拒绝，其他已开始任务不会自动取消。高并发部署还需考虑全局配额、取消传播和部分失败策略。
+**仍未证明。** 当前校验可以发现内部时间冲突，却不能证明现实世界的营业时间、实时交通、路线可达性、天气和真实库存/预订状态。
 
-[核查版本源码](https://github.com/GOOD-123-CPU/retail-audit-agent/blob/269ef1bd46e9336cb6a7dca99f430dd331aaaeea/lib/analysis.ts) · [CI](https://github.com/GOOD-123-CPU/retail-audit-agent/actions/workflows/ci.yml) · [运行与功能说明](https://github.com/GOOD-123-CPU/retail-audit-agent#readme)
+[行程引擎](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [Agent route](https://github.com/GOOD-123-CPU/itinera/blob/main/src/app/api/agent/route.ts) · [测试](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts)
 
-CI 执行类型检查、单元测试和生产构建。仓库的哈希伪向量模块用于演示，不能作为语义检索效果的证据。
+## 3. MediRAG：RAG 评估必须先定义证据等级
 
-## 3. MediRAG：应用链路与验证范围
+**应用链路。** Query 改写、双路召回、RRF、重排序、置信度判断、Prompt 组装、SSE 生成和安全兜底为独立阶段。MySQL、Milvus、MinIO 与 Redis 承担不同存储与运行职责。
 
-**模块划分。** 架构文档将查询改写、双路召回、RRF 融合、重排序和 Prompt 组装划为独立组件。业务数据、向量数据和原始文件分别由 MySQL、Milvus 和 MinIO 承担；Redis 用于缓存与限流。
+**评估契约。** `evaluation/eval_retrieval.py` 现在强制区分两类输入：
 
-**交付检查。** CI 分别运行后端 `mvn -B verify` 和前端安装、构建；另有密钥扫描和仅在 PR 上执行的依赖审查。覆盖率与构建产物设置了上传步骤，其中缺失文件采用 `ignore`，因此成功工作流本身不能证明每类产物均存在。
+1. 每条 query 都有独立 `relevant_doc_ids` 时，才输出真正基于相关文档集合的 **Recall@K / MRR@K**；
+2. 没有 qrels 的旧病例只输出 **proxy_hit_rate@K / proxy_mrr@K**，并在结果中标记 `heuristic_keyword_proxy`。
 
-**验证边界。** README 已说明离线检索脚本使用词法信号，不调用完整 Milvus、重排序及生成链路。完整效果评估需要独立标注的查询与相关文档、固定数据版本、检索阶段对比及回答引用检查。
+混用有标注和无标注 case 会直接报错。CI 内的合成 qrels fixture 只验证指标公式和契约，不被描述成医疗检索 benchmark。当前公开的 11 科室病例与样例知识库也不被包装成人工标注 ground truth。
 
-[架构与接口](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/ARCHITECTURE.md) · [评估范围](https://github.com/GOOD-123-CPU/medirag-open#readme) · [CI](https://github.com/GOOD-123-CPU/medirag-open/actions/workflows/ci.yml)
+**交付与供应链检查。** CI 执行后端 Maven verify、前端类型/构建、Gitleaks、评估单测/合成 sanity benchmark，以及不依赖 GitHub Dependency Graph 的前端高危 `npm audit`。引入 audit 后实际发现并刷新了 Axios/form-data/lodash/nanoid/picomatch/postcss 等锁文件依赖。GitHub Dependency Review 在 Dependency Graph 未启用时仅作为 advisory，不冒充有效门禁。
 
-## 4. Itinera：模型输出如何进入产品流程
+**仍未证明。** 完整 RAG 效果仍需要固定真实知识库版本和独立 qrels，分别评估 vector/keyword recall、RRF、reranker、引用对齐和生成事实性；医疗适用性需要更高等级的领域验证。
 
-`src/lib/itinerary.ts` 将行程解析和兜底构造组织为纯函数。解析器读取模型返回的 itinerary JSON 代码块，检查标题、步骤数组、时间等字段；输入失败时返回空结果，由调用方选择后续策略。独立的 `tests/itinerary.test.ts` 提供解析及兜底行为的测试入口。
+[RAG 链路](https://github.com/GOOD-123-CPU/medirag-open/blob/main/docs/rag-pipeline.md) · [评估器](https://github.com/GOOD-123-CPU/medirag-open/blob/main/evaluation/eval_retrieval.py) · [评估测试](https://github.com/GOOD-123-CPU/medirag-open/blob/main/evaluation/test_eval_retrieval.py)
 
-这体现了把模型输出作为待校验输入的工程边界。字段形状检查仍不等于现实约束验证：时间顺序、实际营业时间、路线可达性和真实预订需要额外数据与业务校验。当前项目明确将天气、预订和部分数据定位为演示。
+## 4. OpenInterview：业务状态与 worker 执行所有权分开
 
-[行程引擎](https://github.com/GOOD-123-CPU/itinera/blob/main/src/lib/itinerary.ts) · [测试](https://github.com/GOOD-123-CPU/itinera/blob/main/tests/itinerary.test.ts) · [API](https://github.com/GOOD-123-CPU/itinera/blob/main/API.md)
+状态扫描本身不能保证多 worker 幂等：两个进程可能同时看到同一个 `NOT_STARTED` / `COMPLETED` 记录，然后重复执行 LLM 或 PDF 工作。
 
-## 5. HanBayes 与 VoxFrontier：研究代码的工程表达
+现在额外使用 SQLite `task_leases` 表保存 `(task_type, entity_id, owner, lease_until)`。认领通过 `BEGIN IMMEDIATE` 事务完成：
 
-HanBayes 的 `ChineseSentimentAnalyzer` 提供统一训练入口，将共享特征处理与具体模型实现分开，并提供解释接口、冻结配置和实验结果文件。VoxFrontier 的 manifest 写入输入与结果表的 SHA-256、环境信息、随机种子和运行摘要，使结果漂移可以被核查。
+- 同一实体、同一任务同时只能有一个 owner；
+- 非 owner 不能释放别人的 lease；
+- 正常完成或失败都会主动释放；
+- worker 崩溃后，过期 lease 可以被其他进程重新认领；
+- 业务状态机继续描述产品状态，lease 只描述执行所有权。
 
-这里应区分两种承诺：文件哈希能检查文件是否一致；统计结论是否成立仍取决于数据、方法和实验协议。主页因此同时链接实现、方法说明和原始结果。
+CI 在 Python 3.10 / 3.11 / 3.12 上运行，最终验证记录中为 **62 passed**；新增测试覆盖互斥认领、owner release、lease renew 和 expiry recovery。
 
-[HanBayes API](https://github.com/GOOD-123-CPU/hanbayes/blob/main/src/hanbayes/analyzer.py) · [VoxFrontier manifest](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/src/voxfrontier/utils/manifest.py)
+**仍未证明。** 当前 lease 默认有固定 TTL，而不是持续 heartbeat；如果单次外部调用超过 lease 时间，仍可能发生重执行。因此外部副作用仍应保持幂等，生产规模更大时可进一步引入队列、幂等 key 或 durable outbox。
+
+[架构与 ADR](https://github.com/GOOD-123-CPU/OpenInterview/blob/main/docs/architecture.md) · [Task lease](https://github.com/GOOD-123-CPU/OpenInterview/blob/main/app/services/task_lease.py) · [服务测试](https://github.com/GOOD-123-CPU/OpenInterview/blob/main/app/tests/test_services.py)
+
+## 5. Investment Committee：LLM 解释不能改写确定性数字
+
+该项目的核心不是“智能体数量”，而是区分**确定性市场/量化事实**和**模型解释**。Quant Agent 可以解释 valuation、momentum 等结果，但模型返回后，权威量化字段会由代码计算值重新覆盖。
+
+2026-09-24 新增 Bun 单测锁定：
+
+- rating 阈值；
+- 缺失维度重新归一化；
+- Very High risk veto；
+- risk penalty 上限；
+- position sizing 与 confidence adjustment；
+- snapshot/live PE、PB 的数据优先级；
+- RSI、波动率与 52 周位置等指标边界。
+
+测试第一次运行实际发现：最新 quote 高于 K-line 窗口最高收盘价时，`pos52w` 可超过 100。实现随后把该语义指标钳制到 0–100，重新运行 CI 后通过。这里的价值不是“测试数量”，而是自动门禁确实发现了一个之前隐藏的业务边界 bug。
+
+**仍未证明。** Bull/Bear debate、Risk Review、CIO synthesis 是工作流设计，不是“多智能体一定比单智能体更准确”的证据。真正比较需要固定数据集，对 single-agent / parallel / debate / debate+review 的事实错误、无依据数字、风险覆盖、矛盾率、延迟和 token 成本做实验。
+
+[Agent/量化流水线](https://github.com/GOOD-123-CPU/investment-committee/blob/main/src/lib/pipeline/agents.ts) · [评分核心](https://github.com/GOOD-123-CPU/investment-committee/blob/main/src/lib/pipeline/scoring.ts) · [确定性测试](https://github.com/GOOD-123-CPU/investment-committee/blob/main/tests/deterministic-core.test.ts)
+
+## 6. HanBayes：研究结果和“可复现”不是同一个词
+
+HanBayes 已有 frozen config、最终指标、McNemar 表和 paired bootstrap 表。新增的验证进一步分成两层：
+
+**统计实现测试。** 单测覆盖 tied-score AUC、perfect separation、exact McNemar 的已知概率，以及 seeded paired bootstrap 的确定性。
+
+**Published artifact contract。** `scripts/verify_published_results.py` 不重新训练模型，而是检查仓库里已经提交的证据是否互相一致，包括：
+
+- `configs/frozen.json` 与打包配置是否一致；
+- 模型集合和顺序是否符合冻结实验；
+- 指标是否落在合法区间；
+- McNemar discordant pair 是否等于 b+c，显著性 flag 是否与 p-value 一致；
+- bootstrap 的 seed / resample count 是否来自 frozen config；
+- CI 区间、均值和 `ci_excludes_zero` 是否自洽。
+
+这只能证明**已发布 artifact 内部一致**，不能替代从原始数据重新执行 `python scripts/run_pipeline.py --final` 的独立复现。
+
+[算法说明](https://github.com/GOOD-123-CPU/hanbayes/blob/main/docs/algorithm.md) · [统计实现](https://github.com/GOOD-123-CPU/hanbayes/blob/main/src/hanbayes/evaluation.py) · [artifact verifier](https://github.com/GOOD-123-CPU/hanbayes/blob/main/scripts/verify_published_results.py)
+
+## 7. 其他证据链
+
+**Retail Audit Agent。** 规则判定与模型解释分离；单次分析使用有界并发，结果顺序稳定。当前并发限制是单请求级，不等于全局配额；worker 未处理异常仍可能导致整次 `Promise.all` 拒绝。
+
+[分析编排](https://github.com/GOOD-123-CPU/retail-audit-agent/blob/main/lib/analysis.ts)
+
+**VoxFrontier。** run manifest 写入输入/结果 SHA-256、环境、随机种子和摘要，可以核对“是不是同一批文件/同一运行环境”。哈希一致不证明因果识别成立；公开结果仍是合成数据演示。
+
+[Manifest](https://github.com/GOOD-123-CPU/voxFrontier/blob/main/src/voxfrontier/utils/manifest.py)
+
+**LexAtlas。** RAG 流水线的 fallback 判断现在会同步持久化到 `law_message.isFallback`，不再出现 SSE/retrieval log 显示 fallback、数据库却永远写 0 的不一致；修复通过受保护分支 PR 与 CI 后合并。
+
+[RagPipeline](https://github.com/GOOD-123-CPU/LexAtlas/blob/main/src/main/java/com/lexatlas/service/rag/RagPipeline.java)
 
 ## 可核查的交付记录
 
-以下是核查时已成功完成的工作流记录；它们只证明对应提交的检查结果，不代表未来提交或所有部署环境。
+以下记录只证明对应提交/PR 的自动检查状态，不代表所有部署环境，也不替代真实业务或模型效果验证。
 
-| 项目 | 成功记录 |
-| :--- | :--- |
-| ScreenWeaver | [CI run 35949190502](https://github.com/GOOD-123-CPU/screenweaver/actions/runs/35949190502)（2026-09-24，含 HTTP 生命周期修复与测试） |
-| Retail Audit Agent | [CI run 34741136840](https://github.com/GOOD-123-CPU/retail-audit-agent/actions/runs/34741136840) |
-| MediRAG | [CI run 34741206405](https://github.com/GOOD-123-CPU/medirag-open/actions/runs/34741206405) |
-| VoxFrontier | [CI run 34740061138](https://github.com/GOOD-123-CPU/voxFrontier/actions/runs/34740061138) |
+| 项目 | 成功记录 | 本轮主要证据 |
+| :--- | :--- | :--- |
+| ScreenWeaver | [CI 35949190502](https://github.com/GOOD-123-CPU/screenweaver/actions/runs/35949190502) | HTTP 生命周期修复与测试 |
+| Itinera | [CI 35950603865](https://github.com/GOOD-123-CPU/itinera/actions/runs/35950603865) | 语义行程约束与 canonical action binding |
+| MediRAG | [CI 35950830905](https://github.com/GOOD-123-CPU/medirag-open/actions/runs/35950830905) | label-aware evaluation、依赖审计、构建/扫描 |
+| OpenInterview | [CI 35950927142](https://github.com/GOOD-123-CPU/OpenInterview/actions/runs/35950927142) | 62 tests、Python matrix、task lease |
+| Investment Committee | [CI 35950863817](https://github.com/GOOD-123-CPU/investment-committee/actions/runs/35950863817) | deterministic-core tests + production build |
+| HanBayes | [CI 35950628672](https://github.com/GOOD-123-CPU/hanbayes/actions/runs/35950628672) | statistical primitives + artifact contract |
+| LexAtlas | [PR CI 35949238482](https://github.com/GOOD-123-CPU/LexAtlas/actions/runs/35949238482) | fallback persistence test |
+| Retail Audit Agent | [CI 34741136840](https://github.com/GOOD-123-CPU/retail-audit-agent/actions/runs/34741136840) | type/test/build |
+| VoxFrontier | [CI 34740061138](https://github.com/GOOD-123-CPU/voxFrontier/actions/runs/34740061138) | reproducible pipeline checks |
 
 ## 技术交流
 
-全部公开仓库及其阅读入口见 [项目目录](PROJECTS.md)。目录覆盖工程产品、研究分析、领域应用、工具和写作成果；没有应用 CI 的项目会单独注明，不与已通过构建的项目混淆。
+全部公开仓库及其阅读入口见 [项目目录](PROJECTS.md)。目录覆盖工程产品、研究分析、领域应用、工具和写作成果；验证范围会明确写出，避免把 CI、合成 sanity test、artifact consistency 或 demo 行为描述成它们并不能证明的更强结论。
 
 讨论实现时，可在对应仓库 Issue 中提供运行环境、复现步骤、预期与实际结果。方法讨论可附数据版本、配置和原始指标，方便核对与复现。
