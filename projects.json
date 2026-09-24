@@ -1,22 +1,134 @@
 {
-  "reviewed_on": "2026-09-14",
+  "reviewed_on": "2026-09-24",
   "owner": "GOOD-123-CPU",
   "projects": [
-    {"name":"screenweaver","group":"工程与产品","summary":"配置驱动可视化引擎；数据源、组件注册与渲染分层。","entry":"docs/architecture.md","entry_label":"架构","verification":"配置校验、测试、应用与库构建 CI"},
-    {"name":"itinera","group":"工程与产品","summary":"AI 行程产品原型；结构化输出解析、确定性兜底、地图与订单模拟。","entry":"src/lib/itinerary.ts","entry_label":"行程引擎","verification":"行程、LLM、密码与限流测试；构建 CI"},
-    {"name":"medirag-open","group":"工程与产品","summary":"Java 医疗知识问答；多阶段检索、来源引用与多服务部署。","entry":"docs/ARCHITECTURE.md","entry_label":"系统架构","verification":"后端验证、前端构建与扫描 CI；离线词法评估不等于完整 RAG 评估"},
-    {"name":"retail-audit-agent","group":"工程与产品","summary":"零售审计演示工作台；规则分析、受限并发解释与报告编排。","entry":"lib/analysis.ts","entry_label":"分析编排","verification":"类型检查、单测与构建 CI；哈希伪向量不代表语义检索"},
-    {"name":"OpenInterview","group":"工程与产品","summary":"语音面试应用；简历、出题、转录、异步报告与事件通知。","entry":"docs/architecture.md","entry_label":"架构","verification":"pytest 与 CI；自动报告应由人工复核"},
-    {"name":"green-cert-trading","group":"工程与产品","summary":"绿证交易学习系统；商城、拼团、库存与管理端。","entry":"README.md","entry_label":"启动与目录","verification":"后端测试与前端构建 CI；不代表真实交易结算能力"},
-    {"name":"gavel","group":"工程与产品","summary":"拍卖学习系统；Spring Boot、Vue 2 管理端与 HTML 门户。","entry":"server/src/test/java/com/gavel/controller/PasswordVerificationTest.java","entry_label":"测试样例","verification":"CI 与安全行为测试；并发竞价及持久化仍需集成验证"},
-    {"name":"hanbayes","group":"研究与方法","summary":"可解释贝叶斯分类包；共享稀疏特征、模型对比与冻结实验配置。","entry":"src/hanbayes/analyzer.py","entry_label":"Python API","verification":"测试与 CI；已提交模型结果、Bootstrap 和 McNemar 表"},
-    {"name":"voxFrontier","group":"研究与方法","summary":"效率与因果分析流水线；DEA、归因、DML、情景模拟及结果哈希。","entry":"src/voxfrontier/utils/manifest.py","entry_label":"复现记录","verification":"测试与 CI；公开结果为合成数据演示"},
-    {"name":"green-finance-high-quality-development-review","group":"研究与方法","summary":"绿色金融文献综述；提供 Markdown、PDF、Word 与引用元数据。","entry":"paper.md","entry_label":"论文","verification":"研究写作成果；不是软件项目，不以构建状态评价"},
-    {"name":"LexAtlas","group":"领域 AI 与工具","summary":"法律知识检索应用；RAG、文档入库、缓存与管理功能。","entry":"docs/ARCHITECTURE.md","entry_label":"架构","verification":"Java 与 Vue 测试、构建 CI；领域效果需独立评估"},
-    {"name":"nutrimentor","group":"领域 AI 与工具","summary":"Python 营养教学平台；混合检索、教学人格、会话与诊断 CLI。","entry":"src/nutrimentor/evaluation.py","entry_label":"评估实现","verification":"单测与 CI；recall@K 字段实际按查询命中比例计算"},
-    {"name":"AlphaDebate-FinResearch","group":"领域 AI 与工具","summary":"FinSightPro：Python 多角色辩论与研报生成，包含数据和模型编排。","entry":"finsight/services/orchestrator.py","entry_label":"编排器","verification":"编排、问答与路由测试 CI；模型评审分数不代表投资效果"},
-    {"name":"investment-committee","group":"领域 AI 与工具","summary":"Next.js 投研终端原型；市场数据、智能体、辩论、投票与报告。","entry":"src/lib/pipeline/runner.ts","entry_label":"研究流水线","verification":"本次目录检查未发现测试套件或应用 CI；优先补交付验证"},
-    {"name":"research-figure-workbench","group":"领域 AI 与工具","summary":"科研制图工作流与 Python 检查脚本；支持图表文件预检。","entry":"scripts/preflight_figure.py","entry_label":"预检脚本","verification":"提供 smoke render；本次未发现 CI，文件预检不等于视觉审核"},
-    {"name":"GOOD-123-CPU","group":"主页与导航","summary":"个人工程作品入口、全项目目录与设计阅读指南。","entry":"ENGINEERING.md","entry_label":"工程指南","verification":"目录由结构化清单生成，并通过一致性检查"}
+    {
+      "name": "screenweaver",
+      "group": "工程与产品",
+      "summary": "配置驱动可视化引擎；数据源生命周期、组件注册与渲染分层。",
+      "entry": "docs/architecture.md",
+      "entry_label": "架构",
+      "verification": "HTTP 状态/取消/轮询重叠测试，配置校验、单测、应用与库构建 CI"
+    },
+    {
+      "name": "itinera",
+      "group": "工程与产品",
+      "summary": "AI 行程产品；结构化输出解析、时间/坐标语义校验、候选 ID 约束与确定性兜底。",
+      "entry": "src/lib/itinerary.ts",
+      "entry_label": "行程引擎",
+      "verification": "语义约束与候选绑定单测；预订动作回绑数据库 canonical record；构建 CI"
+    },
+    {
+      "name": "medirag-open",
+      "group": "工程与产品",
+      "summary": "Java 医疗知识问答；混合召回、RRF、重排序、置信度兜底、引用与 SSE。",
+      "entry": "docs/ARCHITECTURE.md",
+      "entry_label": "系统架构",
+      "verification": "后端/前端/密钥/依赖审计 CI；有 qrels 才报告 Recall/MRR，无 qrels 仅报告 proxy 指标"
+    },
+    {
+      "name": "retail-audit-agent",
+      "group": "工程与产品",
+      "summary": "零售审计演示工作台；规则分析、受限并发解释与报告编排。",
+      "entry": "lib/analysis.ts",
+      "entry_label": "分析编排",
+      "verification": "类型检查、单测与构建 CI；哈希伪向量不代表语义检索"
+    },
+    {
+      "name": "OpenInterview",
+      "group": "工程与产品",
+      "summary": "语音面试应用；简历、出题、转录、报告 worker，以及 SQLite 原子 task lease。",
+      "entry": "docs/architecture.md",
+      "entry_label": "架构",
+      "verification": "62 pytest；Python 3.10/3.11/3.12 CI；多 worker 互斥与过期 lease 恢复测试；AI 结果需人工复核"
+    },
+    {
+      "name": "green-cert-trading",
+      "group": "工程与产品",
+      "summary": "绿证交易学习系统；商城、拼团、库存与管理端。",
+      "entry": "README.md",
+      "entry_label": "启动与目录",
+      "verification": "后端测试与前端构建 CI；不代表真实交易结算能力"
+    },
+    {
+      "name": "gavel",
+      "group": "工程与产品",
+      "summary": "拍卖学习系统；Spring Boot、Vue 2 管理端与 HTML 门户。",
+      "entry": "server/src/test/java/com/gavel/controller/PasswordVerificationTest.java",
+      "entry_label": "测试样例",
+      "verification": "CI 与安全行为测试；并发竞价及持久化仍需集成验证"
+    },
+    {
+      "name": "hanbayes",
+      "group": "研究与方法",
+      "summary": "可解释贝叶斯分类包；共享稀疏特征、模型对比、冻结配置与统计检验。",
+      "entry": "src/hanbayes/analyzer.py",
+      "entry_label": "Python API",
+      "verification": "跨 OS/Python CI；AUC/McNemar/bootstrap 单测；冻结配置与已发布结果 artifact contract 检查"
+    },
+    {
+      "name": "voxFrontier",
+      "group": "研究与方法",
+      "summary": "效率与因果分析流水线；DEA、归因、DML、情景模拟及结果哈希。",
+      "entry": "src/voxfrontier/utils/manifest.py",
+      "entry_label": "复现记录",
+      "verification": "测试与 CI；公开结果为合成数据演示"
+    },
+    {
+      "name": "green-finance-high-quality-development-review",
+      "group": "研究与方法",
+      "summary": "绿色金融文献综述；提供 Markdown、PDF、Word 与引用元数据。",
+      "entry": "paper.md",
+      "entry_label": "论文",
+      "verification": "研究写作成果；不是软件项目，不以构建状态评价"
+    },
+    {
+      "name": "LexAtlas",
+      "group": "领域 AI 与工具",
+      "summary": "法律知识检索应用；RAG、文档入库、缓存、管理功能与安全兜底。",
+      "entry": "docs/ARCHITECTURE.md",
+      "entry_label": "架构",
+      "verification": "Java 与 Vue 测试/构建 CI；fallback 状态持久化有单测；领域效果仍需独立评估"
+    },
+    {
+      "name": "nutrimentor",
+      "group": "领域 AI 与工具",
+      "summary": "Python 营养教学平台；混合检索、教学人格、会话与诊断 CLI。",
+      "entry": "src/nutrimentor/evaluation.py",
+      "entry_label": "评估实现",
+      "verification": "单测与 CI；recall@K 字段实际按查询命中比例计算"
+    },
+    {
+      "name": "AlphaDebate-FinResearch",
+      "group": "领域 AI 与工具",
+      "summary": "FinSightPro：Python 多角色辩论与研报生成，包含数据和模型编排。",
+      "entry": "finsight/services/orchestrator.py",
+      "entry_label": "编排器",
+      "verification": "编排、问答与路由测试 CI；模型评审分数不代表投资效果"
+    },
+    {
+      "name": "investment-committee",
+      "group": "领域 AI 与工具",
+      "summary": "Next.js 投研终端；确定性量化核心、专业智能体、牛熊辩论、风险审查与 CIO 汇总。",
+      "entry": "src/lib/pipeline/runner.ts",
+      "entry_label": "研究流水线",
+      "verification": "Bun 确定性核心单测 + Prisma/ESLint/生产构建 CI；模型辩论本身不代表投资效果"
+    },
+    {
+      "name": "research-figure-workbench",
+      "group": "领域 AI 与工具",
+      "summary": "科研制图工作流与 Python 检查脚本；支持图表文件预检。",
+      "entry": "scripts/preflight_figure.py",
+      "entry_label": "预检脚本",
+      "verification": "提供 smoke render；本次未发现 CI，文件预检不等于视觉审核"
+    },
+    {
+      "name": "GOOD-123-CPU",
+      "group": "主页与导航",
+      "summary": "个人工程作品入口、全项目目录与设计阅读指南。",
+      "entry": "ENGINEERING.md",
+      "entry_label": "工程指南",
+      "verification": "目录由结构化清单生成，并通过一致性检查"
+    }
   ]
 }
